@@ -26,6 +26,7 @@ add_executable(
     src/obstacles.cpp 
     src/utils.cpp
     src/cubic_spline.cpp
+    src/rrtstar.cpp
 )
 
 target_link_libraries(
