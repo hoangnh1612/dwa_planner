@@ -25,6 +25,7 @@ add_executable(
     src/main.cpp 
     src/obstacles.cpp 
     src/utils.cpp
+    src/cubic_spline.cpp
 )
 
 target_link_libraries(

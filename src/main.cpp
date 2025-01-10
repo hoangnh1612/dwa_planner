@@ -1,10 +1,11 @@
 #include"obstacles.h"
+#include"cubic_spline.h"
 #include<iostream>
 
 int main()
 {
     // read .png map by opencv 
-    cv::Mat map = cv::imread("../map/map.png", cv::IMREAD_COLOR);
+    // cv::Mat map = cv::imread("../map/map.png", cv::IMREAD_COLOR);
     // std::cout<<"Rows:"<<map.rows<<" Cols:"<<map.cols<<"Size: "<<map.size[0]<<std::endl;
     // int c= map.at<cv::Vec3b>(127, 336)[0];
     // for (int i = 200;i<400;i++)
@@ -17,14 +18,64 @@ int main()
     //     }
     // }
     // render map 
-    ObstacleList obs_list;
-    obs_list.initialization(map, 10, 0.1, {0, 0, 0});
-    while(1)
+
+    /**
+     * @brief test obstacle 
+     */
+    // ObstacleList obs_list;
+    // obs_list.initialization(map, 10, 0.1, {0, 0, 0});
+    // while(1)
+    // {
+    // obs_list.updateObstaclePosition();
+    // cv::Mat obs_map = obs_list.obstacleVisualization();
+    // cv::imshow("Obstacle", obs_map);
+    // cv::waitKey(5);
+    // }
+
+    /**
+     * @brief test cubic spline 
+     */
+    Waypoints waypoints;
+    waypoints.push_back({0, 0});
+    waypoints.push_back({1, 2});
+    waypoints.push_back({2, 2});
+    waypoints.push_back({3, 5});
+    waypoints.push_back({4, 4});
+    waypoints.push_back({5, 4});
+    waypoints.push_back({6, 7});
+    waypoints.push_back({7, 1});
+    waypoints.push_back({8, 8});
+    waypoints.push_back({9, 9});
+    waypoints.push_back({10, 5});
+    CubicSpline2D cubic_spline;
+    cubic_spline.initialization(waypoints, 0.01, 0.1);
+    ReferencePath path = cubic_spline.computeCubicPath();
+    for (int i = 0; i < path.size(); i++)
     {
-    obs_list.updateObstaclePosition();
-    cv::Mat obs_map = obs_list.obstacleVisualization();
-    cv::imshow("Obstacle", obs_map);
-    cv::waitKey(5);
+        std::cout<<"X: "<<path[i].x<<" Y: "<<path[i].y<<std::endl;
     }
+    //visualise point and path in opencv
+    cv::Mat path_map = cv::Mat::zeros(1000, 1000, CV_8UC3);
+    for (int i = 0; i < path.size(); i++)
+    {
+        Point2DPixel point = convertMeterToPixel(path[i], 10, 10, 1000);
+        path_map.at<cv::Vec3b>(point.y, point.x)[0] = 255;
+        path_map.at<cv::Vec3b>(point.y, point.x)[1] = 255;
+        path_map.at<cv::Vec3b>(point.y, point.x)[2] = 255;
+        for (int i = 0;i<waypoints.size();i++)
+        {
+            Point2DPixel point = convertMeterToPixel(waypoints[i], 10, 10, 1000);
+            // path_map.at<cv::Vec3b>(point.y, point.x)[0] = 255;
+            // path_map.at<cv::Vec3b>(point.y, point.x)[1] = 0;
+            // path_map.at<cv::Vec3b>(point.y, point.x)[2] = 0;
+            cv::circle(path_map, cv::Point(point.x, point.y), 3, cv::Scalar(0, 0, 255), -1);
+        }
+    }
+    cv::imshow("Path", path_map);
+    cv::waitKey(0);
+
+
+
+
 
 }
