@@ -1,6 +1,6 @@
 #ifndef DWA_OBSACTLES_H
 #define DWA_OBSACTLES_H
-#include "ultis.h"
+#include "utils.h"
   /**
     * @brief Default constructor of the abstract obstacle class
     */
@@ -57,6 +57,8 @@ public:
      */
     bool checkCollideWithWall(const Point2D, const cv::Mat, const double, const double, const int, const BGR);
 
+};
+
 
 class ObstacleList
 {
@@ -102,4 +104,4 @@ public:
      */
 	cv::Mat obstacleVisualization();
 };
-};
+#endif

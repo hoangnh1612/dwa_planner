@@ -14,7 +14,7 @@ Obstacle::Obstacle(Point2D p, Velocity v, double r, double pt, double dt)
 
 Obstacle::~Obstacle(){}
 
-Obstacle::updatePosition(const cv::Mat map, const double gain_x, const double gain_y, const int height, const BGR color_map)
+void Obstacle::updatePosition(const cv::Mat map, const double gain_x, const double gain_y, const int height, const BGR color_map)
 {
     Point2D new_position;
     new_position.x = this->position.x + this->vel.x * this->dt;
@@ -72,10 +72,10 @@ bool Obstacle::checkCollideWithWall(const Point2D point, const cv::Mat map, cons
 	if (color.b == color_map.b && color.g == color_map.g && color.r == color_map.r) return true;
 	return false;
 }
-
 ObstacleList::ObstacleList(){}
+ObstacleList::~ObstacleList(){}
 
-ObstacleList::initialization(cv::Mat map, const double predict_time,const double dt, const BGR color_map )
+void ObstacleList::initialization(cv::Mat map, const double predict_time,const double dt, const BGR color_map )
 {
 	this->map = map;
 	this->predict_time = predict_time;
@@ -83,7 +83,7 @@ ObstacleList::initialization(cv::Mat map, const double predict_time,const double
 	this->gain_x = (double)map.rows * pixel_to_meter / 2;
 	this->gain_y = (double)map.cols * pixel_to_meter / 2;
 	this->height = this->map.cols;
-	this->color_map = color;
+	this->color_map = color_map;
 	Point2D pos;
 	pos.x = 10.0;
 	pos.y = 7.0;
@@ -112,25 +112,25 @@ ObstacleList::initialization(cv::Mat map, const double predict_time,const double
 	this->obstacles.push_back(obs3);
 	pos.x = 10.0;
 	pos.y = -6.0;
-	vel.x = 0.5;
+	vel.x = -0.5;
 	vel.y = 0.0;
 	Obstacle obs4(pos, vel, 0.5, predict_time, this->dt);
 	this->obstacles.push_back(obs4);
 	pos.x = -5.0;
 	pos.y = 11.0;
-	vel.x = -0.5;
+	vel.x = 0.5;
 	vel.y = 0.0;
 	Obstacle obs5(pos, vel, 0.5, predict_time, this->dt);
 	this->obstacles.push_back(obs5);
 	pos.x = 0.0;
 	pos.y = 10.0;
-	vel.x = -0.5;
+	vel.x = 0.5;
 	vel.y = 0.0;
 	Obstacle obs6(pos, vel, 0.5, predict_time, this->dt);
 	this->obstacles.push_back(obs6);
 	pos.x = 10.0;
 	pos.y = 2.0;
-	vel.x = -0.5;
+	vel.x = 0.5;
 	vel.y = 0.0;
 	Obstacle obs7(pos, vel, 0.5, predict_time, this->dt);
 	this->obstacles.push_back(obs7);
@@ -143,24 +143,24 @@ ObstacleList::initialization(cv::Mat map, const double predict_time,const double
 	pos.x = -0.5;
 	pos.y = 5.0;
 	vel.x = 0.0;
-	vel.y = -0.6;
+	vel.y = 0.6;
 	Obstacle obs9(pos, vel, 0.5, predict_time, this->dt);
 	this->obstacles.push_back(obs9);
 	pos.x = 1.8;
 	pos.y = 10.0;
 	vel.x = 0.0;
-	vel.y = -0.6;
+	vel.y = 0.6;
 	Obstacle obs10(pos, vel, 0.5, predict_time, this->dt);
 	this->obstacles.push_back(obs10);
-	pos.x = 01.5;
+	pos.x = 1.5;
 	pos.y = 0.0;
 	vel.x = 0.0;
-	vel.y = 0.0;
+	vel.y = 1.0;
 	Obstacle obs11(pos, vel, 0.5, predict_time, this->dt);
 	this->obstacles.push_back(obs11);
 }
 
-ObstacleList::getObstacleInObservation(const Pose2D pose, const double r)
+std::vector<Obstacle> ObstacleList::getObstacleInObservation(const Pose2D pose, const double r)
 {
     std::vector<Obstacle> observable;
     for (int i = 0;i<obstacles.size(); i++)
@@ -175,7 +175,7 @@ ObstacleList::getObstacleInObservation(const Pose2D pose, const double r)
     return observable;
 }
 
-ObstacleList::updateObstaclePosition()
+void ObstacleList::updateObstaclePosition()
 {
     for(int i = 0; i< this->obstacles.size(); i++)
     {
